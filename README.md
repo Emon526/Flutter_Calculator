@@ -1,16 +1,38 @@
-# Calculator
+# Calculator App by using flutter
 
 A new Flutter Calculator including dark and light theme.
 
-## Getting Started
 
-This project is a starting point for a Flutter application.
+**Features:**
 
-A few resources to get you started if this is your first Flutter project:
+- Dark & Light Theme
+- Calculation History
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+**Packages we are using:**
+
+- shared_preferences: [link](https://pub.dev/packages/shared_preferences)
+- provider: [link](https://pub.dev/packages/provider)
+- math_expressions: [link](https://pub.dev/packages/math_expressions)
+- path: [link](https://pub.dev/packages/path)
+- sqflite: [link](https://pub.dev/packages/sqflite)
+
+
+
+Our Calculator app contains single screen and a special feature of saving every equation history.User can clear the history any time they want.
+
+This is a complete functional calculator app that works on both Android and iOS devices. For state management, we use the provider package.
+
+
+# Calculator App Final UI
+
+
+**Dark Mode Final UI**
+
+
+![App UI](preview/dark_mode.png)
+
+
+**Light Mode Final UI**
+
+![App UI](preview/light_mode.png)
