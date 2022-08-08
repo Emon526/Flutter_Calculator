@@ -1,4 +1,5 @@
 class Consts {
+  static final THEME_STATUS = "THEME_STATUS";
   static List buttons = [
     'C',
     'DEL',

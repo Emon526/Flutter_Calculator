@@ -2,11 +2,17 @@ import 'package:calculator/consts/styles.dart';
 import 'package:calculator/home_screen.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import 'providers/theme_provider.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
   runApp(const Calculator());
 }
 
@@ -35,7 +41,7 @@ class _CalculatorState extends State<Calculator> {
       providers: [
         ChangeNotifierProvider(create: (_) {
           return themeProvider;
-        })
+        }),
       ],
       child: Consumer<ThemeProvider>(
         builder: (context, themeProvider, child) {
