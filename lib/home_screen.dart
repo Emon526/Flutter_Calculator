@@ -257,9 +257,17 @@ class _HomeScreenState extends State<HomeScreen> {
                               return _buttonWidget(
                                 buttoncolor: Theme.of(context).canvasColor,
                                 onTap: () {
-                                  // setState(() {
-                                  //   userInput += Consts.buttons[index];
-                                  // });
+                                  setState(() {
+                                    if (userInput.isEmpty) {
+                                      return;
+                                    } else if (hasOperator()) {
+                                      return;
+                                    } else if (userInput.contains('%')) {
+                                      return;
+                                    } else {
+                                      userInput += Consts.buttons[index];
+                                    }
+                                  });
                                 },
                                 buttonText: Consts.buttons[index],
                                 textColor:
@@ -292,6 +300,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                         return;
                                       } else if (userInput.isEmpty) {
                                         return;
+                                      } else if (userInput.contains('%')) {
+                                        hasPercentage(userInput);
+                                        _onSave();
+                                        isEmpty = false;
                                       } else {
                                         equalPressed();
                                         _onSave();
@@ -386,10 +398,111 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
 // function to calculate the input operation
+
+  void hasPercentage(String userinput) {
+    log('haspersentage entry');
+    if (userinput.contains('+')) {
+      //only 1 + working multiple + error
+      String tempuserinput = userinput;
+      int operator = userinput.indexOf('+');
+      String operators = userinput[operator];
+      tempuserinput = userinput.replaceAll('+', '*');
+
+      String persentageanswer;
+      persentageanswer = tempuserinput.replaceAll('%', '/100');
+
+      List<String> splited = persentageanswer.split('*');
+      String firstinput = splited[0];
+
+      Parser p = Parser();
+      Expression exp1 = p.parse(persentageanswer);
+
+      ContextModel cm = ContextModel();
+
+      double persent = exp1.evaluate(EvaluationType.REAL, cm);
+
+      String finalinput = firstinput + operators + persent.toString();
+      Expression exp2 = p.parse(finalinput);
+      double finalans = exp2.evaluate(EvaluationType.REAL, cm);
+      answer = finalans.toString();
+    } else if (userinput.contains('-')) {
+      //only 1 + working multiple + error
+      String tempuserinput = userinput;
+      int operator = userinput.indexOf('-');
+      String operators = userinput[operator];
+      tempuserinput = userinput.replaceAll('-', '*');
+
+      String persentageanswer;
+      persentageanswer = tempuserinput.replaceAll('%', '/100');
+
+      List<String> splited = persentageanswer.split('*');
+      String firstinput = splited[0];
+
+      Parser p = Parser();
+      Expression exp1 = p.parse(persentageanswer);
+
+      ContextModel cm = ContextModel();
+
+      double persent = exp1.evaluate(EvaluationType.REAL, cm);
+
+      String finalinput = firstinput + operators + persent.toString();
+      Expression exp2 = p.parse(finalinput);
+      double finalans = exp2.evaluate(EvaluationType.REAL, cm);
+      answer = finalans.toString();
+    }
+    //  else if (userinput.contains('/')) {
+    //   //only 1 / working multiple / error
+    //   String tempuserinput = userinput;
+    //   int operator = userinput.indexOf('-');
+    //   String operators = userinput[operator];
+    //   tempuserinput = userinput.replaceAll('-', '*');
+
+    //   String persentageanswer;
+    //   persentageanswer = tempuserinput.replaceAll('%', '/100');
+
+    //   List<String> splited = persentageanswer.split('*');
+    //   String firstinput = splited[0];
+
+    //   Parser p = Parser();
+    //   Expression exp1 = p.parse(persentageanswer);
+
+    //   ContextModel cm = ContextModel();
+
+    //   double persent = exp1.evaluate(EvaluationType.REAL, cm);
+
+    //   String finalinput = firstinput + operators + persent.toString();
+    //   Expression exp2 = p.parse(finalinput);
+    //   double finalans = exp2.evaluate(EvaluationType.REAL, cm);
+    //   answer = finalans.toString();
+    // }
+
+    else if (userinput.contains('x')) {
+      //only 1 x working multiple x error
+      String tempuserinput = userinput;
+      tempuserinput = userinput.replaceAll('x', '*');
+      String persentageanswer;
+      persentageanswer = tempuserinput.replaceAll('%', '/100');
+      Parser p = Parser();
+      Expression exp = p.parse(persentageanswer);
+      ContextModel cm = ContextModel();
+      double persent = exp.evaluate(EvaluationType.REAL, cm);
+      answer = persent.toString();
+    } else {
+      //only %
+      String finaluserinput = userinput;
+      String persentageanswer = finaluserinput.replaceAll('%', '/100');
+      // log('% replace $persentageanswer');
+      Parser p = Parser();
+      Expression exp = p.parse(persentageanswer);
+      ContextModel cm = ContextModel();
+      double eval = exp.evaluate(EvaluationType.REAL, cm);
+      answer = eval.toString();
+    }
+  }
+
   void equalPressed() {
     String finaluserinput = userInput;
     finaluserinput = userInput.replaceAll('x', '*');
-
     Parser p = Parser();
     Expression exp = p.parse(finaluserinput);
     ContextModel cm = ContextModel();
