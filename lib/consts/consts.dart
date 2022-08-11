@@ -1,10 +1,10 @@
 class Consts {
-  static final THEME_STATUS = "THEME_STATUS";
+  static const THEME_STATUS = "THEME_STATUS";
   static List buttons = [
     'C',
-    'DEL',
+    '⌫',
     '%',
-    '/',
+    '÷',
     '7',
     '8',
     '9',
@@ -17,7 +17,7 @@ class Consts {
     '2',
     '3',
     '+',
-    ',',
+    '⌞⌝',
     '0',
     '.',
     '=',

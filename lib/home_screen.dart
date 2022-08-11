@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -24,6 +22,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   bool visible = false;
   bool isEmpty = true;
+  bool fullscreen = false;
 
   @override
   void initState() {
@@ -47,286 +46,229 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
     final themestate = Provider.of<ThemeProvider>(context);
     final Size size = MediaQuery.of(context).size;
-
-    return Scaffold(
-        body: Column(
-          children: [
-            Expanded(
-              child: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    visible = false;
-                  });
-                },
-                child: Container(
-                  color: Theme.of(context).scaffoldBackgroundColor,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            themestate.setTheme = !themestate.getDarkTheme;
-                          });
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.all(4),
-                          margin: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                              color: Theme.of(context).primaryColor,
-                              shape: BoxShape.circle),
-                          child: Icon(
-                            themestate.getDarkTheme
-                                ? Icons.dark_mode_outlined
-                                : Icons.light_mode_outlined,
-                            color: Theme.of(context).iconTheme.color,
-                            size: 18,
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        width: double.infinity,
-                        height: size.height * 0.05,
-                        child: FittedBox(
-                          alignment: Alignment.centerRight,
-                          child: Text(
-                            userInput,
-                            style: const TextStyle(
-                              fontSize: 40,
-                              fontWeight: FontWeight.w100,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      SizedBox(
-                        width: double.infinity,
-                        height: size.height * 0.1,
-                        child: FittedBox(
-                          alignment: Alignment.centerRight,
-                          child: Text(
-                            answer,
-                            style: const TextStyle(
-                              fontSize: 50,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: GestureDetector(
+    //for status bar color
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+        statusBarColor: Theme.of(context).scaffoldBackgroundColor,
+        statusBarIconBrightness:
+            themestate.getDarkTheme ? Brightness.light : Brightness.dark,
+      ),
+    );
+    return SafeArea(
+      child: Scaffold(
+          body: Column(
+            children: [
+              Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      visible = false;
+                    });
+                  },
+                  child: Container(
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        GestureDetector(
                           onTap: () {
                             setState(() {
-                              visible = !visible;
+                              themestate.setTheme = !themestate.getDarkTheme;
                             });
                           },
-                          child: Icon(
-                            Icons.history_rounded,
-                            color: Theme.of(context).colorScheme.secondary,
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            margin: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                                color: Theme.of(context).primaryColor,
+                                shape: BoxShape.circle),
+                            child: Icon(
+                              themestate.getDarkTheme
+                                  ? Icons.dark_mode_outlined
+                                  : Icons.light_mode_outlined,
+                              color: Theme.of(context).iconTheme.color,
+                              size: 18,
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                        SizedBox(
+                          width: double.infinity,
+                          height: size.height * 0.05,
+                          child: FittedBox(
+                            alignment: Alignment.centerRight,
+                            child: Text(
+                              userInput,
+                              style: const TextStyle(
+                                fontSize: 40,
+                                fontWeight: FontWeight.w100,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        SizedBox(
+                          width: double.infinity,
+                          height: size.height * 0.1,
+                          child: FittedBox(
+                            alignment: Alignment.centerRight,
+                            child: Text(
+                              answer,
+                              style: const TextStyle(
+                                fontSize: 50,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                visible = !visible;
+                              });
+                            },
+                            child: Icon(
+                              Icons.history_rounded,
+                              color: Theme.of(context).colorScheme.secondary,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-            visible
-                ? Expanded(
-                    flex: 2,
-                    child: Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(10),
-                      color: Theme.of(context).canvasColor,
-                      child: FutureBuilder<List<HistoryModel>>(
-                        future: _gethistories(),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return Center(
-                              child: CircularProgressIndicator(
-                                color: Theme.of(context).primaryColor,
-                              ),
-                            );
-                          }
-                          if (snapshot.data!.isNotEmpty) {
-                            isEmpty == false;
-                            return Column(
-                              children: [
-                                Expanded(
-                                  child: ListView.separated(
-                                    separatorBuilder: (context, index) =>
-                                        const Divider(
-                                      thickness: 1,
-                                    ),
-                                    itemCount: snapshot.data!.length,
-                                    itemBuilder: (context, index) {
-                                      isEmpty = false;
-                                      final history = snapshot.data![index];
-                                      return _historyWidget(
-                                        history,
-                                        context,
-                                        visible,
-                                      );
-                                    },
-                                  ),
+              visible
+                  ? Expanded(
+                      flex: 2,
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(10),
+                        color: Theme.of(context).canvasColor,
+                        child: FutureBuilder<List<HistoryModel>>(
+                          future: _gethistories(),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  color: Theme.of(context).primaryColor,
                                 ),
-                              ],
-                            );
-                          }
+                              );
+                            }
+                            if (snapshot.data!.isNotEmpty) {
+                              isEmpty == false;
+                              return Column(
+                                children: [
+                                  Expanded(
+                                    child: ListView.separated(
+                                      separatorBuilder: (context, index) =>
+                                          const Divider(
+                                        thickness: 1,
+                                      ),
+                                      itemCount: snapshot.data!.length,
+                                      itemBuilder: (context, index) {
+                                        isEmpty = false;
+                                        final history = snapshot.data![index];
+                                        return _historyWidget(
+                                          history,
+                                          context,
+                                          visible,
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }
 
-                          return Container(
-                            alignment: Alignment.center,
-                            height: size.height * 0.67,
-                            child: Text(
-                              'No History',
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.w500,
-                                color: Theme.of(context).primaryColor,
+                            return Container(
+                              alignment: Alignment.center,
+                              height: size.height * 0.67,
+                              child: Text(
+                                'No History',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w500,
+                                  color: Theme.of(context).primaryColor,
+                                ),
                               ),
-                            ),
-                          );
-                        },
+                            );
+                          },
+                        ),
                       ),
-                    ),
-                  )
-                : Expanded(
-                    flex: 2,
-                    child: Container(
-                      alignment: Alignment.center,
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 10),
-                      color: Theme.of(context).canvasColor,
-                      child: GridView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: Consts.buttons.length,
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 4,
-                            mainAxisSpacing: 10,
-                            crossAxisSpacing: 10,
-                          ),
-                          itemBuilder: (context, index) {
-                            // Clear Button
-                            if (index == 0) {
-                              return _buttonWidget(
-                                buttoncolor: Theme.of(context).canvasColor,
-                                onTap: () {
-                                  setState(() {
-                                    userInput = '';
-                                    answer = '0';
-                                  });
-                                },
-                                buttonText: Consts.buttons[index],
-                                textColor: Theme.of(context).primaryColor,
-                              );
-                            }
-                            // DEL button
-                            else if (index == 1) {
-                              return _buttonWidget(
-                                buttoncolor: Theme.of(context).canvasColor,
-                                buttonText: Consts.buttons[index],
-                                textColor:
-                                    Theme.of(context).colorScheme.secondary,
-                                onTap: () {
-                                  setState(() {
-                                    if (userInput.isNotEmpty) {
-                                      // log(userInput.length.toString());
-                                      userInput = userInput.substring(
-                                          0, userInput.length - 1);
-                                    }
-                                  });
-                                },
-                              );
-                            }
-                            // % Button
-                            else if (index == 2) {
-                              return _buttonWidget(
-                                buttoncolor: Theme.of(context).canvasColor,
-                                onTap: () {
-                                  setState(() {
-                                    if (userInput.isEmpty) {
-                                      return;
-                                    } else if (hasOperator()) {
-                                      return;
-                                    } else if (userInput.contains('%')) {
-                                      return;
-                                    } else {
-                                      userInput += Consts.buttons[index];
-                                    }
-                                  });
-                                },
-                                buttonText: Consts.buttons[index],
-                                textColor:
-                                    Theme.of(context).colorScheme.secondary,
-                              );
-                            }
-
-                            // , Button
-                            else if (index == 16) {
-                              return _buttonWidget(
-                                buttoncolor: Theme.of(context).canvasColor,
-                                onTap: () {
-                                  // log(',');
-                                  // setState(() {
-                                  //   userInput += Consts.buttons[index];
-                                  // });
-                                },
-                                buttonText: Consts.buttons[index],
-                                textColor: themestate.getDarkTheme
-                                    ? const Color(0xffAAAAAA)
-                                    : const Color(0xff706E6E),
-                              );
-                            }
-                            // Equal_to Button
-                            else if (index == 19) {
-                              return _buttonWidget(
+                    )
+                  : Expanded(
+                      flex: 2,
+                      child: Container(
+                        alignment: Alignment.center,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 20, vertical: 10),
+                        color: Theme.of(context).canvasColor,
+                        child: GridView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: Consts.buttons.length,
+                            gridDelegate:
+                                const SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: 4,
+                              mainAxisSpacing: 10,
+                              crossAxisSpacing: 10,
+                            ),
+                            itemBuilder: (context, index) {
+                              // Clear Button
+                              if (index == 0) {
+                                return _buttonWidget(
+                                  buttoncolor: Theme.of(context).canvasColor,
                                   onTap: () {
                                     setState(() {
-                                      if (hasOperator()) {
-                                        return;
-                                      } else if (userInput.isEmpty) {
-                                        return;
-                                      } else if (userInput.contains('%')) {
-                                        hasPercentage(userInput);
-                                        _onSave();
-                                        isEmpty = false;
-                                      } else {
-                                        equalPressed();
-                                        _onSave();
-                                        isEmpty = false;
-                                      }
+                                      userInput = '';
+                                      answer = '0';
                                     });
                                   },
                                   buttonText: Consts.buttons[index],
+                                  textColor: Theme.of(context).primaryColor,
+                                );
+                              }
+                              // ⌫ button
+                              else if (index == 1) {
+                                return _buttonWidget(
+                                  buttoncolor: Theme.of(context).canvasColor,
+                                  buttonText: Consts.buttons[index],
                                   textColor:
-                                      Theme.of(context).scaffoldBackgroundColor,
-                                  buttoncolor: Theme.of(context).primaryColor);
-                            }
-                            // Expressions
-                            else if (index == 3 ||
-                                index == 7 ||
-                                index == 11 ||
-                                index == 15) {
-                              return _buttonWidget(
+                                      Theme.of(context).colorScheme.secondary,
+                                  onTap: () {
+                                    setState(() {
+                                      if (userInput.isNotEmpty) {
+                                        // log(userInput.length.toString());
+                                        userInput = userInput.substring(
+                                            0, userInput.length - 1);
+                                      }
+                                    });
+                                  },
+                                );
+                              }
+                              // % Button
+                              else if (index == 2) {
+                                return _buttonWidget(
+                                  buttoncolor: Theme.of(context).canvasColor,
                                   onTap: () {
                                     setState(() {
                                       if (userInput.isEmpty) {
                                         return;
                                       } else if (hasOperator()) {
+                                        return;
+                                      } else if (userInput.contains('%')) {
                                         return;
                                       } else {
                                         userInput += Consts.buttons[index];
@@ -334,60 +276,130 @@ class _HomeScreenState extends State<HomeScreen> {
                                     });
                                   },
                                   buttonText: Consts.buttons[index],
+                                  textColor:
+                                      Theme.of(context).colorScheme.secondary,
+                                );
+                              }
+
+                              // ⌞⌝ Button
+                              else if (index == 16) {
+                                return _buttonWidget(
+                                  buttoncolor: Theme.of(context).canvasColor,
+                                  onTap: () {
+                                    setState(() {
+                                      fullscreen
+                                          ? SystemChrome.setEnabledSystemUIMode(
+                                              SystemUiMode.manual,
+                                              overlays: SystemUiOverlay.values)
+                                          : SystemChrome.setEnabledSystemUIMode(
+                                              SystemUiMode.manual,
+                                              overlays: []);
+
+                                      fullscreen = !fullscreen;
+                                    });
+                                  },
+                                  buttonText: Consts.buttons[index],
                                   textColor: themestate.getDarkTheme
-                                      ? Colors.black
+                                      ? const Color(0xffAAAAAA)
                                       : const Color(0xff706E6E),
-                                  buttoncolor: Theme.of(context).buttonColor);
-                            }
+                                );
+                              }
+                              // Equal_to Button
+                              else if (index == 19) {
+                                return _buttonWidget(
+                                    onTap: () {
+                                      setState(() {
+                                        if (hasOperator()) {
+                                          return;
+                                        } else if (userInput.isEmpty) {
+                                          return;
+                                        } else {
+                                          equalPressed();
+                                          _onSave();
+                                          isEmpty = false;
+                                        }
+                                      });
+                                    },
+                                    buttonText: Consts.buttons[index],
+                                    textColor: Theme.of(context)
+                                        .scaffoldBackgroundColor,
+                                    buttoncolor:
+                                        Theme.of(context).primaryColor);
+                              }
+                              // Expressions
+                              else if (index == 3 ||
+                                  index == 7 ||
+                                  index == 11 ||
+                                  index == 15) {
+                                return _buttonWidget(
+                                    onTap: () {
+                                      setState(() {
+                                        if (userInput.isEmpty) {
+                                          return;
+                                        } else if (hasOperator()) {
+                                          return;
+                                        } else {
+                                          userInput += Consts.buttons[index];
+                                        }
+                                      });
+                                    },
+                                    buttonText: Consts.buttons[index],
+                                    textColor: themestate.getDarkTheme
+                                        ? Colors.black
+                                        : const Color(0xff706E6E),
+                                    buttoncolor: Theme.of(context).buttonColor);
+                              }
 
-                            //  other buttons
-                            else {
-                              return _buttonWidget(
-                                buttoncolor: Theme.of(context).canvasColor,
-                                onTap: () {
-                                  setState(() {
-                                    userInput += Consts.buttons[index];
-                                  });
-                                },
-                                buttonText: Consts.buttons[index],
-                                textColor: themestate.getDarkTheme
-                                    ? const Color(0xffAAAAAA)
-                                    : const Color(0xff706E6E),
-                              );
-                            }
-                          }),
-                    ),
-                  ),
-          ],
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        floatingActionButton: (visible && !isEmpty)
-            ? Material(
-                borderRadius: BorderRadius.circular(12),
-                child: InkWell(
-                    borderRadius: BorderRadius.circular(12),
-                    onTap: () async {
-                      await _databaseService.clearHistory();
-
-                      setState(() {
-                        visible = !visible;
-                        userInput = '';
-                        answer = '';
-                        isEmpty = true;
-                      });
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        'Clear History',
-                        style: TextStyle(
-                          color: Theme.of(context).primaryColor,
-                          fontSize: 18,
-                        ),
+                              //  other buttons
+                              else {
+                                return _buttonWidget(
+                                  buttoncolor: Theme.of(context).canvasColor,
+                                  onTap: () {
+                                    setState(() {
+                                      userInput += Consts.buttons[index];
+                                    });
+                                  },
+                                  buttonText: Consts.buttons[index],
+                                  textColor: themestate.getDarkTheme
+                                      ? const Color(0xffAAAAAA)
+                                      : const Color(0xff706E6E),
+                                );
+                              }
+                            }),
                       ),
-                    )),
-              )
-            : const SizedBox());
+                    ),
+            ],
+          ),
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerDocked,
+          floatingActionButton: (visible && !isEmpty)
+              ? Material(
+                  borderRadius: BorderRadius.circular(12),
+                  child: InkWell(
+                      borderRadius: BorderRadius.circular(12),
+                      onTap: () async {
+                        await _databaseService.clearHistory();
+
+                        setState(() {
+                          visible = !visible;
+                          userInput = '';
+                          answer = '';
+                          isEmpty = true;
+                        });
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          'Clear History',
+                          style: TextStyle(
+                            color: Theme.of(context).primaryColor,
+                            fontSize: 18,
+                          ),
+                        ),
+                      )),
+                )
+              : const SizedBox()),
+    );
   }
 
   bool isOperator(String x) {
@@ -397,112 +409,11 @@ class _HomeScreenState extends State<HomeScreen> {
     return false;
   }
 
-// function to calculate the input operation
-
-  void hasPercentage(String userinput) {
-    log('haspersentage entry');
-    if (userinput.contains('+')) {
-      //only 1 + working multiple + error
-      String tempuserinput = userinput;
-      int operator = userinput.indexOf('+');
-      String operators = userinput[operator];
-      tempuserinput = userinput.replaceAll('+', '*');
-
-      String persentageanswer;
-      persentageanswer = tempuserinput.replaceAll('%', '/100');
-
-      List<String> splited = persentageanswer.split('*');
-      String firstinput = splited[0];
-
-      Parser p = Parser();
-      Expression exp1 = p.parse(persentageanswer);
-
-      ContextModel cm = ContextModel();
-
-      double persent = exp1.evaluate(EvaluationType.REAL, cm);
-
-      String finalinput = firstinput + operators + persent.toString();
-      Expression exp2 = p.parse(finalinput);
-      double finalans = exp2.evaluate(EvaluationType.REAL, cm);
-      answer = finalans.toString();
-    } else if (userinput.contains('-')) {
-      //only 1 + working multiple + error
-      String tempuserinput = userinput;
-      int operator = userinput.indexOf('-');
-      String operators = userinput[operator];
-      tempuserinput = userinput.replaceAll('-', '*');
-
-      String persentageanswer;
-      persentageanswer = tempuserinput.replaceAll('%', '/100');
-
-      List<String> splited = persentageanswer.split('*');
-      String firstinput = splited[0];
-
-      Parser p = Parser();
-      Expression exp1 = p.parse(persentageanswer);
-
-      ContextModel cm = ContextModel();
-
-      double persent = exp1.evaluate(EvaluationType.REAL, cm);
-
-      String finalinput = firstinput + operators + persent.toString();
-      Expression exp2 = p.parse(finalinput);
-      double finalans = exp2.evaluate(EvaluationType.REAL, cm);
-      answer = finalans.toString();
-    }
-    //  else if (userinput.contains('/')) {
-    //   //only 1 / working multiple / error
-    //   String tempuserinput = userinput;
-    //   int operator = userinput.indexOf('-');
-    //   String operators = userinput[operator];
-    //   tempuserinput = userinput.replaceAll('-', '*');
-
-    //   String persentageanswer;
-    //   persentageanswer = tempuserinput.replaceAll('%', '/100');
-
-    //   List<String> splited = persentageanswer.split('*');
-    //   String firstinput = splited[0];
-
-    //   Parser p = Parser();
-    //   Expression exp1 = p.parse(persentageanswer);
-
-    //   ContextModel cm = ContextModel();
-
-    //   double persent = exp1.evaluate(EvaluationType.REAL, cm);
-
-    //   String finalinput = firstinput + operators + persent.toString();
-    //   Expression exp2 = p.parse(finalinput);
-    //   double finalans = exp2.evaluate(EvaluationType.REAL, cm);
-    //   answer = finalans.toString();
-    // }
-
-    else if (userinput.contains('x')) {
-      //only 1 x working multiple x error
-      String tempuserinput = userinput;
-      tempuserinput = userinput.replaceAll('x', '*');
-      String persentageanswer;
-      persentageanswer = tempuserinput.replaceAll('%', '/100');
-      Parser p = Parser();
-      Expression exp = p.parse(persentageanswer);
-      ContextModel cm = ContextModel();
-      double persent = exp.evaluate(EvaluationType.REAL, cm);
-      answer = persent.toString();
-    } else {
-      //only %
-      String finaluserinput = userinput;
-      String persentageanswer = finaluserinput.replaceAll('%', '/100');
-      // log('% replace $persentageanswer');
-      Parser p = Parser();
-      Expression exp = p.parse(persentageanswer);
-      ContextModel cm = ContextModel();
-      double eval = exp.evaluate(EvaluationType.REAL, cm);
-      answer = eval.toString();
-    }
-  }
-
   void equalPressed() {
-    String finaluserinput = userInput;
-    finaluserinput = userInput.replaceAll('x', '*');
+    String temp = userInput;
+    temp = userInput.replaceAll('%', '/100');
+    String tempinput = temp.replaceAll('÷', '/');
+    String finaluserinput = tempinput.replaceAll('x', '*');
     Parser p = Parser();
     Expression exp = p.parse(finaluserinput);
     ContextModel cm = ContextModel();

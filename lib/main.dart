@@ -1,10 +1,9 @@
-import 'package:calculator/consts/styles.dart';
-import 'package:calculator/home_screen.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
+import 'consts/styles.dart';
+import 'home_screen.dart';
 import 'providers/theme_provider.dart';
 
 void main() {
@@ -13,6 +12,7 @@ void main() {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
+
   runApp(const Calculator());
 }
 
